@@ -1,0 +1,55 @@
+profiles:
+  - name: "Profile 1"
+    description: "Test profile"
+    displays:
+      - id: "1DCDBDC1-B3FD-40B3-A048-EEF1CDE789ED"
+        res:
+          x: 2560
+          y: 1440
+        hz: 60
+        color_depth: 8
+        enabled: true
+        scaling: "on"
+        origin:
+          x: 0
+          y: 0
+        degree: 0
+      - id: "37D8832A-2D66-02CA-B9F7-8F30A301B230"
+        res:
+          x: 1800
+          y: 1169
+        hz: 120
+        color_depth: 8
+        enabled: true
+        scaling: "on"
+        origin:
+          x: 380
+          y: 1440
+        degree: 0
+  - name: "Profile 2"
+    displays:
+      - id: "1DCDBDC1-B3FD-40B3-A048-EEF1CDE789ED"
+        res:
+          x: 2560
+          y: 1440
+        hz: 60
+        color_depth: 8
+        enabled: true
+        scaling: "on"
+        origin:
+          x: 0
+          y: 0
+        degree: 0
+      - id: "37D8832A-2D66-02CA-B9F7-8F30A301B230"
+        res:
+          x: 1800
+          y: 1169
+        hz: 120
+        color_depth: 8
+        enabled: true
+        scaling: "on"
+        origin:
+          x: 2560
+          y: 135
+        degree: 0
+
