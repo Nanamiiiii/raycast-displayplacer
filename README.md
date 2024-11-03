@@ -4,7 +4,7 @@ Raycast extension to use displayplacer more conveniently.
 
 ## Features & Roadmap
 - [x] Apply pre-defined profile from raycast
-- [ ] Add new profile from current display arrangement
+- [x] Add new profile from current display arrangement
 - [ ] Profile Modification
 - [ ] Arrage display easily from raycast UI
 
