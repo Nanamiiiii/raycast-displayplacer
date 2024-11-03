@@ -4,26 +4,78 @@ import {
   Icon,
   List,
   getPreferenceValues,
+  Color,
+  confirmAlert,
+  Alert,
+  showToast,
+  Toast,
 } from '@raycast/api'
-import { UserPrefs } from './utils'
-import { usePromise } from '@raycast/utils'
-import { getProfilesFromConfig } from './config'
+import { Profile, UserPrefs } from './utils'
+import { DisplayplacerConfig } from './config'
 import { Fragment } from 'react/jsx-runtime'
 import { applyDisplayProfile } from './displayplacer'
+import { useState } from 'react'
 
 export default function Command(): JSX.Element {
   const preferences = getPreferenceValues<UserPrefs>()
+  const config = DisplayplacerConfig.Fetch(preferences)
 
-  const { data: profiles } = usePromise(() =>
-    getProfilesFromConfig(preferences),
-  )
+  const [profiles, setProfiles] = useState<Profile[]>(config.profiles())
+
+  const applyProfile = async (preferences: UserPrefs, profile: Profile) => {
+    const toast = await showToast({
+      title: 'Applying profile',
+      style: Toast.Style.Animated,
+    })
+    try {
+      await applyDisplayProfile(preferences, profile)
+      toast.style = Toast.Style.Success
+      toast.title = 'Success'
+    } catch (e) {
+      if (e instanceof Error) {
+        toast.style = Toast.Style.Failure
+        toast.title = 'Failed to apply profile'
+        toast.message = e.message
+      }
+    }
+  }
+
+  const deleteProfileWithConfirm = async (
+    config: DisplayplacerConfig,
+    idx: number,
+  ) => {
+    const options: Alert.Options = {
+      title: 'Delete the profile "' + config.profiles()[idx].name + '"?',
+      message: 'You cannot restore once deleting.',
+      primaryAction: {
+        title: 'Delete',
+        style: Alert.ActionStyle.Destructive,
+        onAction: async () => {
+          config.deleteProfileAt(idx)
+          if (!config.writeConfig()) {
+            await showToast({
+              title: 'Failed to update profile',
+              message: 'Something went wrong.',
+              style: Toast.Style.Failure,
+            })
+          }
+        },
+      },
+    }
+    await confirmAlert(options)
+    config.reloadConfig()
+    setProfiles(config.profiles())
+  }
 
   return (
     <List isShowingDetail>
-      {profiles?.map((profile, idx) => (
+      {profiles.map((profile, idx) => (
         <List.Item
           key={idx}
-          icon={Icon.Monitor}
+          icon={{
+            source: Icon.Monitor,
+            tintColor: profile.color || Color.PrimaryText,
+          }}
           title={profile.name}
           subtitle={profile.description || 'No information'}
           detail={
@@ -65,7 +117,7 @@ export default function Command(): JSX.Element {
                           />
                           <List.Item.Detail.Metadata.Label
                             title="Scaling"
-                            text={display.scaling}
+                            text={display.scaling.toString()}
                           />
                           <List.Item.Detail.Metadata.Label
                             title="Position"
@@ -93,7 +145,18 @@ export default function Command(): JSX.Element {
             <ActionPanel>
               <Action
                 title="Apply"
-                onAction={() => applyDisplayProfile(preferences, profile)}
+                autoFocus={true}
+                icon={{ source: Icon.Checkmark, tintColor: Color.Green }}
+                onAction={() => applyProfile(preferences, profile)}
+              />
+              <Action
+                title="Modify"
+                icon={{ source: Icon.Pencil, tintColor: Color.Blue }}
+              />
+              <Action
+                title="Delete"
+                icon={{ source: Icon.Trash, tintColor: Color.Red }}
+                onAction={() => deleteProfileWithConfirm(config, idx)}
               />
             </ActionPanel>
           }

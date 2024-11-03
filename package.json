@@ -11,25 +11,32 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "apply-profile",
-      "title": "Apply Display Profile",
-      "description": "Apply pre-defined display arrangement using displayplacer.",
+      "name": "show-profile",
+      "title": "Display Arrangement Profiles",
+      "description": "List all display profiles in the configuration file. If the configuration file does not exists, create new one at dafault location.",
+      "mode": "view"
+    },
+    {
+      "name": "create-profile",
+      "title": "Save Display Arrangement",
+      "description": "Save current display arrangement as new profile.",
       "mode": "view"
     }
   ],
   "dependencies": {
-    "@raycast/api": "^1.84.8",
-    "@raycast/utils": "^1.17.0",
+    "@raycast/api": "^1.84.10",
+    "@raycast/utils": "^1.18.0",
+    "dayjs": "^1.11.13",
     "yaml": "^2.6.0"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.11",
-    "@types/node": "20.8.10",
-    "@types/react": "18.3.3",
+    "@types/node": "22.8.7",
+    "@types/react": "18.3.12",
     "eslint": "^8.57.0",
     "prettier": "^3.3.3",
     "react-devtools": "^5.2.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.6.3"
   },
   "scripts": {
     "build": "ray build",
@@ -42,7 +49,7 @@
   "preferences": [
     {
       "name": "configfile",
-      "title": "Configuration File",
+      "title": "Location of configuration file",
       "description": "Specify configuration file not in the default location (i.e. ~/.config/raycast-displayplacer/config.yml)",
       "type": "file",
       "required": false
