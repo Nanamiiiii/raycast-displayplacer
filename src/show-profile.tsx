@@ -9,63 +9,60 @@ import {
   Alert,
   showToast,
   Toast,
-} from '@raycast/api'
-import { Profile, UserPrefs } from './utils'
-import { DisplayplacerConfig } from './config'
-import { Fragment } from 'react/jsx-runtime'
-import { applyDisplayProfile } from './displayplacer'
-import { useState } from 'react'
+} from "@raycast/api";
+import { Profile, UserPrefs } from "./utils";
+import { DisplayplacerConfig } from "./config";
+import { Fragment } from "react/jsx-runtime";
+import { applyDisplayProfile } from "./displayplacer";
+import { useState } from "react";
 
 export default function Command(): JSX.Element {
-  const preferences = getPreferenceValues<UserPrefs>()
-  const config = DisplayplacerConfig.Fetch(preferences)
+  const preferences = getPreferenceValues<UserPrefs>();
+  const config = DisplayplacerConfig.Fetch(preferences);
 
-  const [profiles, setProfiles] = useState<Profile[]>(config.profiles())
+  const [profiles, setProfiles] = useState<Profile[]>(config.profiles());
 
   const applyProfile = async (preferences: UserPrefs, profile: Profile) => {
     const toast = await showToast({
-      title: 'Applying profile',
+      title: "Applying profile",
       style: Toast.Style.Animated,
-    })
+    });
     try {
-      await applyDisplayProfile(preferences, profile)
-      toast.style = Toast.Style.Success
-      toast.title = 'Success'
+      await applyDisplayProfile(preferences, profile);
+      toast.style = Toast.Style.Success;
+      toast.title = "Success";
     } catch (e) {
       if (e instanceof Error) {
-        toast.style = Toast.Style.Failure
-        toast.title = 'Failed to apply profile'
-        toast.message = e.message
+        toast.style = Toast.Style.Failure;
+        toast.title = "Failed to apply profile";
+        toast.message = e.message;
       }
     }
-  }
+  };
 
-  const deleteProfileWithConfirm = async (
-    config: DisplayplacerConfig,
-    idx: number,
-  ) => {
+  const deleteProfileWithConfirm = async (config: DisplayplacerConfig, idx: number) => {
     const options: Alert.Options = {
       title: 'Delete the profile "' + config.profiles()[idx].name + '"?',
-      message: 'You cannot restore once deleting.',
+      message: "You cannot restore once deleting.",
       primaryAction: {
-        title: 'Delete',
+        title: "Delete",
         style: Alert.ActionStyle.Destructive,
         onAction: async () => {
-          config.deleteProfileAt(idx)
+          config.deleteProfileAt(idx);
           if (!config.writeConfig()) {
             await showToast({
-              title: 'Failed to update profile',
-              message: 'Something went wrong.',
+              title: "Failed to update profile",
+              message: "Something went wrong.",
               style: Toast.Style.Failure,
-            })
+            });
           }
         },
       },
-    }
-    await confirmAlert(options)
-    config.reloadConfig()
-    setProfiles(config.profiles())
-  }
+    };
+    await confirmAlert(options);
+    config.reloadConfig();
+    setProfiles(config.profiles());
+  };
 
   return (
     <List isShowingDetail>
@@ -77,64 +74,35 @@ export default function Command(): JSX.Element {
             tintColor: profile.color || Color.PrimaryText,
           }}
           title={profile.name}
-          subtitle={profile.description || 'No information'}
+          subtitle={profile.description || "No information"}
           detail={
             <List.Item.Detail
               metadata={
                 <List.Item.Detail.Metadata>
-                  <List.Item.Detail.Metadata.Label
-                    title="Profile Name"
-                    text={profile.name}
-                  />
-                  <List.Item.Detail.Metadata.Label
-                    title="Description"
-                    text={profile.description || 'No information'}
-                  />
-                  {profile.displays.map(display => {
+                  <List.Item.Detail.Metadata.Label title="Profile Name" text={profile.name} />
+                  <List.Item.Detail.Metadata.Label title="Description" text={profile.description || "No information"} />
+                  {profile.displays.map((display) => {
                     if (display.enabled) {
                       return (
                         <Fragment key={display.id}>
                           <List.Item.Detail.Metadata.Separator />
-                          <List.Item.Detail.Metadata.Label
-                            title="Display ID"
-                            text={display.id}
-                          />
+                          <List.Item.Detail.Metadata.Label title="Display ID" text={display.id} />
                           <List.Item.Detail.Metadata.Label
                             title="Resolution"
-                            text={
-                              display.res.x.toString() +
-                              'x' +
-                              display.res.y.toString()
-                            }
+                            text={display.res.x.toString() + "x" + display.res.y.toString()}
                           />
-                          <List.Item.Detail.Metadata.Label
-                            title="Refresh Rate"
-                            text={display.hz.toString()}
-                          />
-                          <List.Item.Detail.Metadata.Label
-                            title="Color Depth"
-                            text={display.color_depth.toString()}
-                          />
-                          <List.Item.Detail.Metadata.Label
-                            title="Scaling"
-                            text={display.scaling.toString()}
-                          />
+                          <List.Item.Detail.Metadata.Label title="Refresh Rate" text={display.hz.toString()} />
+                          <List.Item.Detail.Metadata.Label title="Color Depth" text={display.color_depth.toString()} />
+                          <List.Item.Detail.Metadata.Label title="Scaling" text={display.scaling.toString()} />
                           <List.Item.Detail.Metadata.Label
                             title="Position"
-                            text={
-                              display.origin.x.toString() +
-                              'x' +
-                              display.origin.y.toString()
-                            }
+                            text={display.origin.x.toString() + "x" + display.origin.y.toString()}
                           />
-                          <List.Item.Detail.Metadata.Label
-                            title="Degree"
-                            text={display.degree.toString()}
-                          />
+                          <List.Item.Detail.Metadata.Label title="Degree" text={display.degree.toString()} />
                         </Fragment>
-                      )
+                      );
                     } else {
-                      return <></>
+                      return <></>;
                     }
                   })}
                 </List.Item.Detail.Metadata>
@@ -149,10 +117,7 @@ export default function Command(): JSX.Element {
                 icon={{ source: Icon.Checkmark, tintColor: Color.Green }}
                 onAction={() => applyProfile(preferences, profile)}
               />
-              <Action
-                title="Modify"
-                icon={{ source: Icon.Pencil, tintColor: Color.Blue }}
-              />
+              <Action title="Modify" icon={{ source: Icon.Pencil, tintColor: Color.Blue }} />
               <Action
                 title="Delete"
                 icon={{ source: Icon.Trash, tintColor: Color.Red }}
@@ -163,5 +128,5 @@ export default function Command(): JSX.Element {
         />
       ))}
     </List>
-  )
+  );
 }

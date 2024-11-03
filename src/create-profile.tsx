@@ -1,30 +1,21 @@
-import {
-  Action,
-  ActionPanel,
-  Color,
-  Form,
-  getPreferenceValues,
-  Icon,
-  showToast,
-  Toast,
-} from '@raycast/api'
-import { Profile, UserPrefs } from './utils'
-import { getCurrentDisplayProfile } from './displayplacer'
-import dayjs from 'dayjs'
-import { FormValidation, useForm } from '@raycast/utils'
-import { DisplayplacerConfig } from './config'
+import { Action, ActionPanel, Color, Form, getPreferenceValues, Icon, showToast, Toast } from "@raycast/api";
+import { Profile, UserPrefs } from "./utils";
+import { getCurrentDisplayProfile } from "./displayplacer";
+import dayjs from "dayjs";
+import { FormValidation, useForm } from "@raycast/utils";
+import { DisplayplacerConfig } from "./config";
 
 interface formImput {
-  name: string
-  desc?: string
-  color?: string
+  name: string;
+  desc?: string;
+  color?: string;
 }
 
 export default function Command(): JSX.Element {
-  const preferences = getPreferenceValues<UserPrefs>()
-  const config = DisplayplacerConfig.Fetch(preferences)
-  const displayProfiles = getCurrentDisplayProfile(preferences)
-  const defaultName = 'Profile ' + dayjs().format('YYYY/MM/DD hh:mm:ss')
+  const preferences = getPreferenceValues<UserPrefs>();
+  const config = DisplayplacerConfig.Fetch(preferences);
+  const displayProfiles = getCurrentDisplayProfile(preferences);
+  const defaultName = "Profile " + dayjs().format("YYYY/MM/DD hh:mm:ss");
 
   const saveProfile = (val: formImput) => {
     const profile = {
@@ -32,33 +23,33 @@ export default function Command(): JSX.Element {
       description: val.desc,
       color: val.color,
       displays: displayProfiles,
-    } as Profile
-    config.addProfile(profile)
+    } as Profile;
+    config.addProfile(profile);
     if (config.writeConfig()) {
       showToast({
-        title: 'Successfully created profile',
+        title: "Successfully created profile",
         style: Toast.Style.Success,
-      })
+      });
     } else {
       showToast({
-        title: 'Failed to create profile',
-        message: 'Failed to write to the configuration file.',
+        title: "Failed to create profile",
+        message: "Failed to write to the configuration file.",
         style: Toast.Style.Failure,
-      })
+      });
     }
-  }
+  };
 
   const { handleSubmit, itemProps } = useForm<formImput>({
     initialValues: {
       name: defaultName,
     },
     onSubmit(values) {
-      saveProfile(values)
+      saveProfile(values);
     },
     validation: {
       name: FormValidation.Required,
     },
-  })
+  });
 
   return (
     <Form
@@ -81,16 +72,8 @@ export default function Command(): JSX.Element {
           title="None"
           icon={{ source: Icon.CircleFilled, tintColor: Color.PrimaryText }}
         />
-        <Form.Dropdown.Item
-          value="blue"
-          title="Blue"
-          icon={{ source: Icon.CircleFilled, tintColor: Color.Blue }}
-        />
-        <Form.Dropdown.Item
-          value="green"
-          title="Green"
-          icon={{ source: Icon.CircleFilled, tintColor: Color.Green }}
-        />
+        <Form.Dropdown.Item value="blue" title="Blue" icon={{ source: Icon.CircleFilled, tintColor: Color.Blue }} />
+        <Form.Dropdown.Item value="green" title="Green" icon={{ source: Icon.CircleFilled, tintColor: Color.Green }} />
         <Form.Dropdown.Item
           value="magenta"
           title="Magenta"
@@ -106,11 +89,7 @@ export default function Command(): JSX.Element {
           title="Purple"
           icon={{ source: Icon.CircleFilled, tintColor: Color.Purple }}
         />
-        <Form.Dropdown.Item
-          value="red"
-          title="Red"
-          icon={{ source: Icon.CircleFilled, tintColor: Color.Red }}
-        />
+        <Form.Dropdown.Item value="red" title="Red" icon={{ source: Icon.CircleFilled, tintColor: Color.Red }} />
         <Form.Dropdown.Item
           value="yellow"
           title="Yellow"
@@ -118,5 +97,5 @@ export default function Command(): JSX.Element {
         />
       </Form.Dropdown>
     </Form>
-  )
+  );
 }
