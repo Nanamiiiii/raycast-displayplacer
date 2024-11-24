@@ -29,6 +29,15 @@ const configCandidates = [
   configEnvs.home + "/" + defaultDotName + ".yaml",
 ];
 
+const getFallbackPath = () => {
+  if (configEnvs.xdgConfigHome && configEnvs.xdgConfigHome !== "") {
+    return configCandidates[0];
+  } else if (configEnvs.home && configEnvs.home !== "") {
+    return configCandidates[4];
+  }
+  return "";
+}
+
 const searchConfigPath = (preferences: UserPrefs) => {
   let foundConfig = "";
   if (!preferences.configfile) {
@@ -143,6 +152,11 @@ export class DisplayplacerConfig {
     return config;
   };
 
+  public isExists = () => {
+    if (this.path && this.path !== "") return true;
+    else return false;
+  }
+
   public reloadConfig = () => {
     if (this.path && this.path !== "") {
       try {
@@ -160,7 +174,10 @@ export class DisplayplacerConfig {
   };
 
   public writeConfig = (backup: boolean = false) => {
-    if (this.path === "") return false;
+    if (!this.isExists()) {
+        this.path = getFallbackPath();
+        console.log("Set fallback config path: " + this.path);
+    }
     const configDir = path.dirname(this.path);
     const basename = path.basename(this.path);
     const configYml = stringify(this.config);
